@@ -1,0 +1,37 @@
+:root {
+  /* Modo Claro (Predeterminado) */
+  --bg-main: #F9F8F6;
+  --card-bg: #FFFFFF;
+  --text-main: #1F2937;
+  --text-muted: #4B5563;
+  --primary: #10B981;
+  --primary-hover: #059669;
+  --accent: #F97316;
+  --border-color: #E5E7EB;
+}
+
+/* Modo Oscuro (Se activa si el contenedor o el HTML tiene la clase 'dark') */
+.dark {
+  --bg-main: #111827;
+  --card-bg: #1F2937;
+  --text-main: #F3F4F6;
+  --text-muted: #D1D5DB;
+  --primary: #34D399;
+  --primary-hover: #10B981;
+  --accent: #FB923C;
+  --border-color: #374151;
+}
+
+/* Estilos base globales */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}

@@ -1,0 +1,282 @@
+<header class="site-header">
+  <div class="container nav-wrapper">
+    <a class="brand" href="#inicio" aria-label="Ir al inicio">
+      <span class="brand-icon" aria-hidden="true">🐾</span>
+      <span class="brand-name">Patitas <span class="brand-accent">Felices</span></span>
+    </a>
+
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a href="#inicio">Inicio</a>
+      <a href="#alimento">Alimento</a>
+      <a href="#juguetes">Juguetes</a>
+      <a href="#cuidado">Cuidado</a>
+      <a href="#nosotros">Sobre nosotros</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+
+    <div class="header-actions">
+      <button id="theme-toggle" class="theme-button" type="button"
+        aria-label="Cambiar tema" title="Cambiar tema">
+        <span class="theme-icon" aria-hidden="true"></span>
+        <span class="theme-label">Tema oscuro</span>
+      </button>
+
+      <button id="menu-toggle" class="menu-button" type="button"
+        aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav">
+        <span class="menu-bar"></span>
+        <span class="menu-bar"></span>
+        <span class="menu-bar"></span>
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-nav" class="mobile-nav" aria-label="Navegación móvil" hidden>
+    <a href="#inicio">Inicio</a>
+    <a href="#alimento">Alimento</a>
+    <a href="#juguetes">Juguetes</a>
+    <a href="#cuidado">Cuidado</a>
+    <a href="#nosotros">Sobre nosotros</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: color-mix(in srgb, var(--bg-main) 80%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .nav-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 4.5rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: var(--text-main);
+  }
+
+  .brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    background-color: rgba(249, 115, 22, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    font-size: 1.15rem;
+  }
+
+  .brand-accent {
+    color: var(--primary);
+  }
+
+  .main-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .main-nav a {
+    position: relative;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 9999px;
+    transition: color 0.2s, background-color 0.2s;
+  }
+
+  .main-nav a:hover {
+    color: var(--accent);
+    background-color: rgba(249, 115, 22, 0.08);
+  }
+
+  .main-nav a[aria-current="page"] {
+    color: var(--primary);
+    background-color: rgba(16, 185, 129, 0.12);
+  }
+
+  .theme-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+
+  .theme-button:hover {
+    background-color: var(--bg-main);
+    transform: translateY(-1px);
+  }
+
+  .theme-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 9999px;
+    background-color: var(--accent);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .menu-button {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0.55rem;
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.2s;
+  }
+
+  .menu-button:hover {
+    background-color: var(--bg-main);
+  }
+
+  .menu-bar {
+    display: block;
+    width: 100%;
+    height: 2px;
+    border-radius: 9999px;
+    background-color: var(--text-main);
+    transition: transform 0.25s, opacity 0.25s;
+  }
+
+  .menu-button[aria-expanded="true"] .menu-bar:nth-child(1) {
+    transform: translateY(0.32rem) rotate(45deg);
+  }
+
+  .menu-button[aria-expanded="true"] .menu-bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-button[aria-expanded="true"] .menu-bar:nth-child(3) {
+    transform: translateY(-0.32rem) rotate(-45deg);
+  }
+
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 1rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+  }
+
+  .mobile-nav[hidden] {
+    display: none;
+  }
+
+  .mobile-nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    transition: color 0.2s, background-color 0.2s;
+  }
+
+  .mobile-nav a:hover {
+    color: var(--accent);
+    background-color: rgba(249, 115, 22, 0.08);
+  }
+
+  @media (max-width: 768px) {
+    .main-nav {
+      display: none;
+    }
+
+    .menu-button {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .theme-label {
+      display: none;
+    }
+
+    .theme-button {
+      padding: 0.55rem;
+    }
+  }
+</style>
+
+<script is:inline>
+  const root = document.documentElement;
+  const button = document.querySelector('#theme-toggle');
+  const label = button?.querySelector('.theme-label');
+  const savedTheme = localStorage.getItem('theme');
+
+  if (savedTheme === 'dark') root.classList.add('dark');
+
+  const updateLabel = () => {
+    if (label) label.textContent = root.classList.contains('dark') ? 'Tema claro' : 'Tema oscuro';
+  };
+
+  button?.addEventListener('click', () => {
+    const dark = root.classList.toggle('dark');
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+    updateLabel();
+  });
+
+  updateLabel();
+
+  const menuButton = document.querySelector('#menu-toggle');
+  const mobileNav = document.querySelector('#mobile-nav');
+
+  menuButton?.addEventListener('click', () => {
+    const open = menuButton.getAttribute('aria-expanded') === 'true';
+    menuButton.setAttribute('aria-expanded', String(!open));
+    menuButton.setAttribute('aria-label', open ? 'Abrir menú' : 'Cerrar menú');
+    if (mobileNav) mobileNav.hidden = open;
+  });
+
+  mobileNav?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      menuButton?.setAttribute('aria-expanded', 'false');
+      menuButton?.setAttribute('aria-label', 'Abrir menú');
+      if (mobileNav) mobileNav.hidden = true;
+    });
+  });
+</script>
