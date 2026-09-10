@@ -1,0 +1,250 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout title="Administrar productos | Patitas Felices">
+  <Header />
+  <main class="admin-page">
+    <div class="container">
+      <p class="eyebrow">PANEL DE ADMINISTRACIÓN</p>
+      <h1>Productos</h1>
+
+      <form id="product-form" class="service-form">
+        <input id="product-id" type="hidden" />
+        <label>Nombre
+          <input id="nombre" maxlength="120" required placeholder="Croquetas Premium" />
+        </label>
+        <label>Precio
+          <input id="precio" type="number" min="0" step="0.01" required placeholder="600" />
+        </label>
+        <label>Imagen (URL)
+          <input id="imagen" type="url" required placeholder="https://..." />
+        </label>
+        <label>Categoría
+          <select id="categoria" required>
+            <option value="" disabled selected>Selecciona una categoría</option>
+            <option value="alimento">Alimento</option>
+            <option value="cuidado">Cuidado</option>
+            <option value="juguetes">Juguetes</option>
+          </select>
+        </label>
+        <div class="form-actions">
+          <button class="button primary" type="submit">Guardar</button>
+          <button id="cancel-edit" class="button secondary" type="button" hidden>Cancelar edición</button>
+        </div>
+      </form>
+
+      <p id="status" role="status" aria-live="polite"></p>
+
+      <div class="table-wrapper">
+        <table class="services-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Imagen</th>
+              <th>Categoría</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="products-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#product-form')!;
+  const idInput = document.querySelector<HTMLInputElement>('#product-id')!;
+  const nombreInput = document.querySelector<HTMLInputElement>('#nombre')!;
+  const precioInput = document.querySelector<HTMLInputElement>('#precio')!;
+  const imagenInput = document.querySelector<HTMLInputElement>('#imagen')!;
+  const categoriaInput = document.querySelector<HTMLSelectElement>('#categoria')!;
+  const cancelButton = document.querySelector<HTMLButtonElement>('#cancel-edit')!;
+  const tbody = document.querySelector<HTMLTableSectionElement>('#products-body')!;
+  const status = document.querySelector<HTMLParagraphElement>('#status')!;
+
+  type Product = { id: number; nombre: string; precio: number; imagen: string; categoria: string };
+
+  function resetForm() {
+    form.reset();
+    idInput.value = '';
+    cancelButton.hidden = true;
+  }
+
+  function showStatus(message: string, isError = false) {
+    status.textContent = message;
+    status.className = isError ? 'status-error' : 'status-ok';
+  }
+
+  function button(label: string, className: string) {
+    const element = document.createElement('button');
+    element.type = 'button';
+    element.textContent = label;
+    element.className = className;
+    return element;
+  }
+
+  function renderRows(products: Product[]) {
+    tbody.replaceChildren();
+    for (const product of products) {
+      const row = document.createElement('tr');
+
+      const cellId = document.createElement('td');
+      cellId.textContent = String(product.id);
+      row.append(cellId);
+
+      const cellName = document.createElement('td');
+      cellName.textContent = product.nombre;
+      row.append(cellName);
+
+      const cellPrice = document.createElement('td');
+      cellPrice.textContent = '$' + Number(product.precio).toFixed(2);
+      row.append(cellPrice);
+
+      const cellImage = document.createElement('td');
+      const img = document.createElement('img');
+      img.src = product.imagen;
+      img.alt = product.nombre;
+      img.className = 'table-thumb';
+      cellImage.append(img);
+      row.append(cellImage);
+
+      const cellCategory = document.createElement('td');
+      cellCategory.textContent = product.categoria;
+      row.append(cellCategory);
+
+      const actions = document.createElement('td');
+      actions.className = 'row-actions';
+
+      const edit = button('Editar', 'button secondary small');
+      edit.addEventListener('click', () => {
+        idInput.value = String(product.id);
+        nombreInput.value = product.nombre;
+        precioInput.value = String(product.precio);
+        imagenInput.value = product.imagen;
+        categoriaInput.value = product.categoria;
+        cancelButton.hidden = false;
+        nombreInput.focus();
+      });
+
+      const remove = button('Eliminar', 'button danger small');
+      remove.addEventListener('click', async () => {
+        if (!confirm('¿Eliminar "' + product.nombre + '"?')) return;
+        const response = await fetch('/api/productos/' + product.id, { method: 'DELETE' });
+        const data = await response.json();
+        if (!response.ok) return showStatus(data.error ?? 'No fue posible eliminar', true);
+        showStatus('Producto eliminado.');
+        await loadProducts();
+      });
+
+      actions.append(edit, remove);
+      row.append(actions);
+      tbody.append(row);
+    }
+  }
+
+  async function loadProducts() {
+    try {
+      const response = await fetch('/api/productos');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? 'No fue posible consultar');
+      renderRows(data);
+    } catch (error) {
+      showStatus(error instanceof Error ? error.message : 'Error inesperado', true);
+    }
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const id = idInput.value;
+    const payload = {
+      nombre: nombreInput.value,
+      precio: Number(precioInput.value),
+      imagen: imagenInput.value,
+      categoria: categoriaInput.value
+    };
+    const response = await fetch(id ? '/api/productos/' + id : '/api/productos', {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) return showStatus(data.error ?? 'No fue posible guardar', true);
+    showStatus(id ? 'Producto actualizado.' : 'Producto creado.');
+    resetForm();
+    await loadProducts();
+  });
+
+  cancelButton.addEventListener('click', resetForm);
+  loadProducts();
+</script>
+
+<style>
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 0.5rem 0;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0 0 2rem 0;
+  }
+
+  .service-form label {
+    color: var(--text-main);
+  }
+
+  .service-form input:focus,
+  .service-form select:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .services-table thead {
+    background-color: var(--card-bg);
+  }
+
+  .services-table th {
+    font-weight: 700;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .services-table td {
+    color: var(--text-main);
+    vertical-align: middle;
+  }
+
+  .services-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .services-table tbody tr:hover {
+    background-color: rgba(16, 185, 129, 0.04);
+  }
+
+  @media (min-width: 768px) {
+    h1 {
+      font-size: 2.5rem;
+    }
+  }
+</style>

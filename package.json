@@ -12,9 +12,14 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.2.9"
+    "@astrojs/node": "^11.1.5",
+    "astro": "^7.2.9",
+    "pg": "^8.23.0"
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
   }
 }

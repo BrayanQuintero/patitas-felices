@@ -1,0 +1,45 @@
+name: astrotech
+
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: astrotech-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - astrotech-net
+
+  astro:
+    build:
+      context: .
+    container_name: astrotech-web
+    restart: unless-stopped
+    ports:
+      - "4321:4321"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - astrotech-net
+
+volumes:
+  postgres_data:
+    name: astrotech-postgres-data
+
+networks:
+  astrotech-net:
+    name: astrotech-net
+    driver: bridge
